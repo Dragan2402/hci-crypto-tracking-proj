@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using TinyCsvParser.Mapping;
 
 namespace CryptoTracking.model
 {
@@ -22,6 +23,15 @@ namespace CryptoTracking.model
         public override string ToString()
         {
             return Code + ":" + Name;
+        }
+    }
+
+    public class CsvPhysicalMapping : CsvMapping<PhysicalCurrency>
+    {
+        public CsvPhysicalMapping() : base()
+        {
+            MapProperty(0, x => x.Code);
+            MapProperty(1, x => x.Name);
         }
     }
 }

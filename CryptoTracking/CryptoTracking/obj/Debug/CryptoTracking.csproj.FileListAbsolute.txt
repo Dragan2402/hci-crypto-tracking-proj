@@ -17,3 +17,4 @@ C:\Users\draga\OneDrive\Dokumenti\HCI\Mini-projekat\hci-crypto-tracking-proj\Cry
 C:\Users\draga\OneDrive\Dokumenti\HCI\Mini-projekat\hci-crypto-tracking-proj\CryptoTracking\CryptoTracking\obj\Debug\CryptoTracking.csproj.CopyComplete
 C:\Users\draga\OneDrive\Dokumenti\HCI\Mini-projekat\hci-crypto-tracking-proj\CryptoTracking\CryptoTracking\obj\Debug\CryptoTracking.exe
 C:\Users\draga\OneDrive\Dokumenti\HCI\Mini-projekat\hci-crypto-tracking-proj\CryptoTracking\CryptoTracking\obj\Debug\CryptoTracking.pdb
+C:\Users\draga\OneDrive\Dokumenti\HCI\Mini-projekat\hci-crypto-tracking-proj\CryptoTracking\CryptoTracking\bin\Debug\TinyCsvParser.dll

@@ -50,6 +50,9 @@
     <Reference Include="System.Xaml">
       <RequiredTargetFramework>4.0</RequiredTargetFramework>
     </Reference>
+    <Reference Include="TinyCsvParser, Version=2.6.1.0, Culture=neutral, PublicKeyToken=d7df35b038077099, processorArchitecture=MSIL">
+      <HintPath>..\packages\TinyCsvParser.2.6.1\lib\net45\TinyCsvParser.dll</HintPath>
+    </Reference>
     <Reference Include="WindowsBase" />
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
@@ -73,7 +76,7 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="model\CryptoCurrencies.cs" />
+    <Compile Include="model\CryptoCurrency.cs" />
     <Compile Include="model\PhysicalCurrency.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
@@ -101,6 +104,8 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="data\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
