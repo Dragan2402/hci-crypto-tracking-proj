@@ -49,34 +49,22 @@ namespace CryptoTracking
                
 
                 
-               
-                foreach (var item in json_data.Keys)
-                {
-                    Console.WriteLine(item);
-                }
+     
 
                 // do something with the json_data
             }        
 
 
-            foreach (var item in PhysicalCurrencies)
-            {
-                Console.WriteLine(item.ToString());
-            }
-
-            foreach (var item in CryptoCurrencies)
-            {
-                Console.WriteLine(item.ToString());
-            }
+           
 
 
             InitializeComponent();
             DataContext = this;
         }
 
-        private void loadPhysicalCurrencies()
+        private void loadCryptoCurrencies()
         {
-            CryptoCurrencies=   new List<CryptoCurrency>();
+            CryptoCurrencies =new List<CryptoCurrency>();
             CsvParserOptions csvParserOptions = new CsvParserOptions(true, ',');
             CsvCryptoMapping csvCryptoMapper = new CsvCryptoMapping();
             CsvParser<CryptoCurrency> csvCryptoParser = new CsvParser<CryptoCurrency>(csvParserOptions, csvCryptoMapper);
@@ -85,32 +73,34 @@ namespace CryptoTracking
             int i = 0;
             foreach (var item in resultCrypto)
             {
+                
                 if (item.Result.Code.Equals("BTC"))
                 {
-                    Console.WriteLine(i);
-                    btcIndex=i;
+                    btcIndex = i;
                 }
                 i++;
+                
                 CryptoCurrency temp = new CryptoCurrency(item.Result.Code, item.Result.Name);
                 CryptoCurrencies.Add(temp);
             }
         }
 
-        private void loadCryptoCurrencies()
+        private void loadPhysicalCurrencies()
         {
             PhysicalCurrencies = new List<PhysicalCurrency>();
             CsvParserOptions csvPhysicalParserOptions = new CsvParserOptions(true, ',');
-            CsvCryptoMapping csvPhysicalMapper = new CsvCryptoMapping();
-            CsvParser<CryptoCurrency> csvPhysicalParser = new CsvParser<CryptoCurrency>(csvPhysicalParserOptions, csvPhysicalMapper);
+            CsvPhysicalMapping csvPhysicalMapper = new CsvPhysicalMapping();
+            CsvParser<PhysicalCurrency> csvPhysicalParser = new CsvParser<PhysicalCurrency>(csvPhysicalParserOptions, csvPhysicalMapper);
             var resultPhysical = csvPhysicalParser.ReadFromFile(@"../../data/physical_currency_list.csv", Encoding.UTF8).ToList();
             int i=0;
             foreach (var item in resultPhysical)
             {
                 if (item.Result.Code.Equals("USD"))
                 {
-                    Console.WriteLine(i);
                     usdIndex = i;
+                    
                 }
+                
                 i++;
                 PhysicalCurrency temp = new PhysicalCurrency(item.Result.Code, item.Result.Name);
                 PhysicalCurrencies.Add(temp);
