@@ -34,32 +34,19 @@ namespace CryptoTracking
 
         public int usdIndex { get; set; }
 
+        private const string QUERY_URL_ROOT = "https://www.alphavantage.co/query";
+        private const string QUERY_URL_FUNCTION = "?function=";
+        private const string QUERY_URL_SYMBOL = "&symbol=";
+        private const string QUERY_URL_MARKET = "&market=";
+        private const string QUERY_URL_INTERVAL = "&interval=";
+        private const string QUERY_URL_API_KEY = "&apikey=2RORR06XPMBUTCS0";
+
         public MainWindow()
         {
             loadCryptoCurrencies();
             loadPhysicalCurrencies();
-            string QUERY_URL = "https://www.alphavantage.co/query?function=DIGITAL_CURRENCY_WEEKLY&symbol=BTC&market=CNY&apikey=2RORR06XPMBUTCS0";
-            Uri queryUri = new Uri(QUERY_URL);
 
-            using (WebClient client = new WebClient())
-            {
-                // -------------------------------------------------------------------------
-                // if using .NET Framework (System.Web.Script.Serialization)
-
-                JavaScriptSerializer js = new JavaScriptSerializer();
-                dynamic json_data = js.Deserialize(client.DownloadString(queryUri), typeof(object));
-
-               
-
-                
-     
-
-                // do something with the json_data
-            }        
-
-
-           
-
+            KeyValuePair<List<string>, List<double>> kvp = GetData("BTC", "USD", Interval.OneMin, CandleValue.Low);
 
             InitializeComponent();
             DataContext = this;
@@ -152,6 +139,49 @@ namespace CryptoTracking
 
         {
             
+        }
+
+        private KeyValuePair<List<string>, List<double>> GetData(string symbol, string market, Interval interval, CandleValue candleValue)
+        {
+            string queryUrl = GetQueryUrl(symbol, market, interval);
+            Uri queryUri = new Uri(queryUrl);
+
+            List<string> times = new List<string>();
+            List<double> values = new List<double>();
+
+            using (WebClient client = new WebClient())
+            {
+                JavaScriptSerializer js = new JavaScriptSerializer();
+                Dictionary<string, object> jsonData = (Dictionary<string, object>)js.Deserialize(client.DownloadString(queryUri), typeof(object));
+                string keykey = interval.GetKey();
+                Dictionary<string, object> timeSeries = (Dictionary<string, object>)jsonData[interval.GetKey()];
+
+                string candleValueKey = candleValue.GetKey(market, interval.IsIntraday());
+
+                foreach (string timeSeriesTime in timeSeries.Keys)
+                {
+                    Dictionary<string, object> timeSeriesValues = (Dictionary<string, object>)timeSeries[timeSeriesTime];
+                    double timeSeriesValue = Double.Parse((string)timeSeriesValues[candleValueKey]);
+
+                    times.Add(timeSeriesTime);
+                    values.Add(timeSeriesValue);
+                }
+            }
+            return new KeyValuePair<List<string>, List<double>>(times, values);
+        }
+
+        private string GetQueryUrl(string symbol, string market, Interval interval)
+        {
+            string queryUrl = QUERY_URL_ROOT +
+                              QUERY_URL_FUNCTION + interval.GetFunction() +
+                              QUERY_URL_SYMBOL + symbol +
+                              QUERY_URL_MARKET + market;
+
+            if (interval.IsIntraday())
+                queryUrl += QUERY_URL_INTERVAL + interval.GetInterval();
+
+            queryUrl += QUERY_URL_API_KEY;
+            return queryUrl;
         }
     }
 }
