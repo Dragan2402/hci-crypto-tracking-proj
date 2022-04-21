@@ -18,6 +18,7 @@ using System.Web.Script.Serialization;
 using CryptoTracking.model;
 using LiveCharts;
 using LiveCharts.Wpf;
+using LiveCharts.Defaults;
 
 namespace CryptoTracking
 {
@@ -115,38 +116,42 @@ namespace CryptoTracking
             chart.AxisX.Clear();
             chart.AxisY.Clear();
 
+            List<string> labels = new List<string>();
+            List<double> values = new List<double>();
+
+
+            for(int i = 0; i < 20; i++)
+            {
+                labels.Add("Datum" + i.ToString());
+            }
+
+            double value = 48000;
+            Random random = new Random();
+
+            for(int i = 0; i < 20; i++)
+            {
+                double randomMultiplier = random.Next(80, 120);
+                value *= randomMultiplier/100;
+                values.Add(value);
+            }
+
+
             chart.AxisX.Add(new LiveCharts.Wpf.Axis
             {
-                Labels = new List<string> { "1.1.2001.", "2.1.2001.", "3.1.2001.", "4.1.2001.", "5.1.2001.", "6.1.2001.", "7.1.2001.", "8.1.2001.", "9.1.2001." },
+                Labels = labels,
 
             });
 
             chart.Series.Clear();
             SeriesCollection series = new SeriesCollection();
-            List<double> values = new List<double>();
-            values.AddRange( new List<double> { 48000, 51000, 59000, 42000, 35000, 31000, 44000, 48000, 55000});
-            series.Add(new LineSeries() { Values = new ChartValues<double>(values) });
+            series.Add(new LineSeries() { Values = new ChartValues<double>(values), LineSmoothness=10 });
             chart.Series = series;
         }
 
         private void ClearData(object sender, RoutedEventArgs e)
 
         {
-            chart.AxisX.Clear();
-            chart.AxisY.Clear();
-            chart.AxisX.Add(new LiveCharts.Wpf.Axis
-            {
-                Labels = new List<string> { "1.1.2002.", "2.1.2002.", "3.1.2002.", "4.1.2002.", "5.1.2002.", "6.1.2002.", "7.1.2002." },
-
-            });
-
-            chart.Series.Clear();
-            SeriesCollection series = new SeriesCollection();
-            List<double> values = new List<double>();
-            values.AddRange(new List<double> { 12000, 22000, 25000, 17000, 14000, 19000, 22000 });
-            series.Add(new LineSeries() { Values = new ChartValues<double>(values) });
-            chart.Series = series;
-
+            
         }
     }
 }
