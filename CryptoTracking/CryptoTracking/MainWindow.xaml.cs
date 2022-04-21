@@ -94,5 +94,21 @@ namespace CryptoTracking
                 PhysicalCurrenciesList.Add(temp);
             }
         }
+
+        private void DisplayData(object sender, RoutedEventArgs e)
+
+        {
+            graph.Visibility = Visibility.Visible;
+           
+
+        }
+
+        private void ClearData(object sender, RoutedEventArgs e)
+
+        {
+            graph.Visibility = Visibility.Hidden;
+            
+
+        }
     }
 }
