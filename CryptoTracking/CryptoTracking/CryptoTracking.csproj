@@ -84,7 +84,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="model\CryptoCurrency.cs" />
+    <Compile Include="model\Interval.cs" />
     <Compile Include="model\PhysicalCurrency.cs" />
+    <Compile Include="model\CandleValue.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
