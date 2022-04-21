@@ -27,8 +27,8 @@
                   ItemsSource="{Binding CryptoCurrencies}" 
                   DisplayMemberPath="Code"
                   SelectedValuePath="Code"
-                  Text="Select a crypto currency"
-                  SelectedIndex="0"
+                  
+                  SelectedIndex="{Binding btcIndex}"
                   Margin="153,28,14,70" >
 
         </ComboBox>
@@ -37,9 +37,8 @@
         <ComboBox Grid.Row="0" Grid.Column="2" Name="cmbMarket"
                   ItemsSource="{Binding PhysicalCurrencies}" 
                   DisplayMemberPath="Code"
-                  SelectedValuePath="Code"
-                  Text="Select a crypto currency"
-                  SelectedIndex="0"
+                  SelectedValuePath="Code"                  
+                  SelectedIndex="{Binding usdIndex}"
                   Margin="183,28,52,70"/>
         <Button Name="DisplayBtn" Content="Display" Click="DisplayData" Grid.Row="0" Grid.Column="3" Margin="87,30,28,64" RenderTransformOrigin="0.5,0.5">
             <Button.RenderTransform>
