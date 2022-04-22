@@ -30,6 +30,9 @@ namespace CryptoTracking
         public List<CryptoCurrency> CryptoCurrencies { get; set; }
         public List<PhysicalCurrency> PhysicalCurrencies { get; set; }
 
+        public string SelectedPhysicalCurrency { get; set; }
+        public string SelectedCryptoCurrency { get; set; }
+
         public int btcIndex { get; set; }  
 
         public int usdIndex { get; set; }
@@ -60,19 +63,20 @@ namespace CryptoTracking
             CsvParser<CryptoCurrency> csvCryptoParser = new CsvParser<CryptoCurrency>(csvParserOptions, csvCryptoMapper);
             var resultCrypto = csvCryptoParser.ReadFromFile(@"../../data/digital_currency_list.csv", Encoding.UTF8).ToList();
 
-            int i = 0;
+            //int i = 0;
             foreach (var item in resultCrypto)
             {
                 
-                if (item.Result.Code.Equals("BTC"))
-                {
-                    btcIndex = i;
-                }
-                i++;
+                //if (item.Result.Code.Equals("BTC"))
+                //{
+                //    btcIndex = i;
+                //}
+                //i++;
                 
                 CryptoCurrency temp = new CryptoCurrency(item.Result.Code, item.Result.Name);
                 CryptoCurrencies.Add(temp);
             }
+            SelectedCryptoCurrency = "BTC";
         }
 
         private void loadPhysicalCurrencies()
@@ -82,61 +86,80 @@ namespace CryptoTracking
             CsvPhysicalMapping csvPhysicalMapper = new CsvPhysicalMapping();
             CsvParser<PhysicalCurrency> csvPhysicalParser = new CsvParser<PhysicalCurrency>(csvPhysicalParserOptions, csvPhysicalMapper);
             var resultPhysical = csvPhysicalParser.ReadFromFile(@"../../data/physical_currency_list.csv", Encoding.UTF8).ToList();
-            int i=0;
+            //int i=0;
             foreach (var item in resultPhysical)
             {
-                if (item.Result.Code.Equals("USD"))
-                {
-                    usdIndex = i;
+                //if (item.Result.Code.Equals("USD"))
+                //{
+                //    usdIndex = i;
                     
-                }
+                //}
                 
-                i++;
+                //i++;
                 PhysicalCurrency temp = new PhysicalCurrency(item.Result.Code, item.Result.Name);
                 PhysicalCurrencies.Add(temp);
             }
+            SelectedPhysicalCurrency = "USD";
         }
 
         private void DisplayData(object sender, RoutedEventArgs e)
-
         {
+            var intervalButton = (RadioButton)grid
+                .Children
+                .OfType<RadioButton>()
+                .Where(rb => rb.GroupName.Equals("IntervalGroup") && rb.IsChecked.HasValue && rb.IsChecked.Value )
+                .FirstOrDefault();
+            Interval interval = (Interval)int.Parse(intervalButton.Uid);
+
+            var candleButton = (RadioButton)grid
+                .Children
+                .OfType<RadioButton>()
+                .Where(rb => rb.GroupName.Equals("CandleGroup") && rb.IsChecked.HasValue && rb.IsChecked.Value)
+                .FirstOrDefault();
+            CandleValue candleValue = (CandleValue)int.Parse(candleButton.Uid);
+
+
+            KeyValuePair<List<string>, List<double>> timeSeries = GetData(SelectedCryptoCurrency, SelectedPhysicalCurrency, interval, candleValue);
+
             chart.AxisX.Clear();
             chart.AxisY.Clear();
 
-            List<string> labels = new List<string>();
-            List<double> values = new List<double>();
+            List<string> times = timeSeries.Key;
+            List<double> values = timeSeries.Value;
 
+            //for(int i = 0; i < 20; i++)
+            //{
+            //    labels.Add("Datum" + i.ToString());
+            //}
 
-            for(int i = 0; i < 20; i++)
-            {
-                labels.Add("Datum" + i.ToString());
-            }
+            //double value = 48000;
+            //Random random = new Random();
 
-            double value = 48000;
-            Random random = new Random();
-
-            for(int i = 0; i < 20; i++)
-            {
-                double randomMultiplier = random.Next(80, 120);
-                value *= randomMultiplier/100;
-                values.Add(value);
-            }
-
+            //for(int i = 0; i < 20; i++)
+            //{
+            //    double randomMultiplier = random.Next(80, 120);
+            //    value *= randomMultiplier/100;
+            //    values.Add(value);
+            //}
 
             chart.AxisX.Add(new LiveCharts.Wpf.Axis
             {
-                Labels = labels,
+                Labels = times,
 
             });
 
             chart.Series.Clear();
             SeriesCollection series = new SeriesCollection();
-            series.Add(new LineSeries() { Values = new ChartValues<double>(values), LineSmoothness=10 });
+            series.Add(new LineSeries()
+            {
+                Values = new ChartValues<double>(values),
+                LineSmoothness = 0,
+                PointGeometrySize = 0
+            });
             chart.Series = series;
         }
 
         private void ClearData(object sender, RoutedEventArgs e)
-
         {
             
         }
@@ -167,6 +190,8 @@ namespace CryptoTracking
                     values.Add(timeSeriesValue);
                 }
             }
+            times.Reverse();
+            values.Reverse();
             return new KeyValuePair<List<string>, List<double>>(times, values);
         }
 

@@ -10,14 +10,14 @@ namespace CryptoTracking.model
 {
     public enum Interval
     {
-        OneMin,
-        FiveMin,
-        FifteenMin,
-        ThirtyMin,
-        SixtyMin,
-        Daily,
-        Weekly,
-        Monthly
+        OneMin = 1,
+        FiveMin = 2,
+        FifteenMin = 3,
+        ThirtyMin = 4,
+        SixtyMin = 5,
+        Daily = 6,
+        Weekly = 7,
+        Monthly = 8
     }
 
     public static class IntervalExtensions

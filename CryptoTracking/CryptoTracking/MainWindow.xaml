@@ -7,7 +7,7 @@
         xmlns:Wpf="clr-namespace:LiveCharts.Wpf;assembly=LiveCharts.Wpf" x:Class="CryptoTracking.MainWindow"
         mc:Ignorable="d"
         Title="MainWindow" Height="600" Width="1000">
-    <Grid Margin="0,0,0,0">
+    <Grid Name="grid" Margin="0,0,0,0">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width = "26" />
             <ColumnDefinition Width="277"/>
@@ -29,15 +29,15 @@
                   DisplayMemberPath="Code"
                   SelectedValuePath="Code"
                   
-                  SelectedIndex="{Binding btcIndex}"
+                  SelectedValue="{Binding SelectedCryptoCurrency}"
                   Margin="153,28,14,70" />
 
         <Label x:Name="MarketLbl" Content="Select Market:" Grid.Row="0" Grid.Column="2" Margin="51,30,184,70"/>
         <ComboBox Grid.Row="0" Grid.Column="2" x:Name="cmbMarket"
                   ItemsSource="{Binding PhysicalCurrencies}" 
                   DisplayMemberPath="Code"
-                  SelectedValuePath="Code"                  
-                  SelectedIndex="{Binding usdIndex}"
+                  SelectedValuePath="Code"
+                  SelectedValue="{Binding SelectedPhysicalCurrency}"
                   Margin="183,28,52,70"/>
         <Button x:Name="DisplayBtn" Content="Display" Click="DisplayData" Grid.Row="0" Grid.Column="3" Margin="87,30,28,64" RenderTransformOrigin="0.5,0.5">
             <Button.RenderTransform>
@@ -48,19 +48,19 @@
         </Button>
         <Label x:Name="timePeriodLbl"  Content="Select Time Period:" Grid.Row="2" Grid.Column="1" Margin="18,3,121,0"/>
         <Label x:Name="viewTypeLbl"  Content="Select View Type:" Grid.Row="3" Grid.Column="1" Margin="18,0,121,10" Height="28" VerticalAlignment="Bottom"/>
-        <RadioButton  x:Name="tgRB1"  GroupName="TimeGroup" IsChecked="True" Grid.Row="2" Grid.Column="2" Margin="0,3,275,0" Content="1min"/>
-        <RadioButton  x:Name="tgRB2"  GroupName="TimeGroup" Grid.Row="2" Grid.Column="2" Margin="63,3,222,0" Content="5 min"/>
-        <RadioButton  x:Name="tgRB3"  GroupName="TimeGroup" Grid.Row="2" Grid.Column="2" Margin="139,3,123,0" Content="15 min"/>
-        <RadioButton  x:Name="tgRB4"  GroupName="TimeGroup" Grid.Row="2" Grid.Column="2" Margin="215,3,52,0" Content="30min"/>
-        <RadioButton  x:Name="tgRB5"  GroupName="TimeGroup" Grid.Row="2" Grid.Column="2" Margin="290,3,192,0" Grid.ColumnSpan="2" Content="60 min"/>
-        <RadioButton  x:Name="tgRB6"  GroupName="TimeGroup" Grid.Row="2" Grid.Column="3" Margin="26,3,145,0" Content="Day"/>
-        <RadioButton  x:Name="tgRB7"  GroupName="TimeGroup" Grid.Row="2" Grid.Column="3" Margin="79,3,79,0" Content="Month"/>
-        <RadioButton  x:Name="tgRB8"  GroupName="TimeGroup" Grid.Row="2" Grid.Column="3" Margin="144,3,27,0" Content="Year"/>
+        <RadioButton  x:Name="rb1min"     GroupName="IntervalGroup" Grid.Row="2" Grid.Column="2" Margin="0,3,275,0"   Content="1min"    Uid="1" IsChecked="True"/>
+        <RadioButton  x:Name="rb5min"     GroupName="IntervalGroup" Grid.Row="2" Grid.Column="2" Margin="63,3,222,0"  Content="5min"    Uid="2"/>
+        <RadioButton  x:Name="rb15min"    GroupName="IntervalGroup" Grid.Row="2" Grid.Column="2" Margin="139,3,123,0" Content="15min"   Uid="3"/>
+        <RadioButton  x:Name="rb30min"    GroupName="IntervalGroup" Grid.Row="2" Grid.Column="2" Margin="215,3,52,0"  Content="30min"   Uid="4"/>
+        <RadioButton  x:Name="rb60min"    GroupName="IntervalGroup" Grid.Row="2" Grid.Column="2" Margin="290,3,192,0" Content="60min"   Uid="5" Grid.ColumnSpan="2"/>
+        <RadioButton  x:Name="rbDaily"    GroupName="IntervalGroup" Grid.Row="2" Grid.Column="3" Margin="26,3,145,0"  Content="Daily"   Uid="6"/>
+        <RadioButton  x:Name="rbWeekly"   GroupName="IntervalGroup" Grid.Row="2" Grid.Column="3" Margin="79,3,79,0"   Content="Weekly"  Uid="7"/>
+        <RadioButton  x:Name="rbMonthly"  GroupName="IntervalGroup" Grid.Row="2" Grid.Column="3" Margin="144,3,27,0"  Content="Monthly" Uid="8"/>
 
-        <RadioButton  x:Name="tpgRB1"  GroupName="TypeGroup" IsChecked="True" Grid.Row="3" Grid.Column="2" Margin="0,3,275,0" Content="Low"/>
-        <RadioButton  x:Name="tpgRB2"  GroupName="TypeGroup" Grid.Row="3" Grid.Column="2" Margin="63,3,208,0" Content="High"/>
-        <RadioButton  x:Name="tpgRB3"  GroupName="TypeGroup" Grid.Row="3" Grid.Column="2" Margin="139,3,123,0" Content="Open"/>
-        <RadioButton  x:Name="tpgRB4"  GroupName="TypeGroup" Grid.Row="3" Grid.Column="2" Margin="215,3,52,0" Content="Close"/>
+        <RadioButton  x:Name="rbLow"    GroupName="CandleGroup" Grid.Row="3" Grid.Column="2" Margin="0,3,275,0"   Content="Low"   Uid="3" IsChecked="True"/>
+        <RadioButton  x:Name="rbHigh"   GroupName="CandleGroup" Grid.Row="3" Grid.Column="2" Margin="63,3,208,0"  Content="High"  Uid="2"/>
+        <RadioButton  x:Name="rbOpen"   GroupName="CandleGroup" Grid.Row="3" Grid.Column="2" Margin="139,3,123,0" Content="Open"  Uid="1"/>
+        <RadioButton  x:Name="rbClose"  GroupName="CandleGroup" Grid.Row="3" Grid.Column="2" Margin="215,3,52,0"  Content="Close" Uid="4"/>
         <Button x:Name="clearBtn"  Grid.Row="3" Grid.Column="3" Content="Clear" Margin="109,1,10,9" Click="ClearData"/>
         <Wpf:CartesianChart x:Name="chart" Grid.Column="1"  HorizontalAlignment="Center" Grid.Row="1" VerticalAlignment="Center" Grid.ColumnSpan="3" Height="346" Width="926"/>
     </Grid>
