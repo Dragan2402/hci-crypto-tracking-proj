@@ -63,6 +63,10 @@
         <RadioButton  x:Name="rbClose"  GroupName="CandleGroup" Grid.Row="3" Grid.Column="2" Margin="215,3,52,0"  Content="Close" Uid="4"/>
         <Button x:Name="clearBtn"  Grid.Row="3" Grid.Column="3" Content="Clear" Margin="109,1,10,9" Click="ClearData"/>
         <Wpf:CartesianChart x:Name="chart" Grid.Column="1"  HorizontalAlignment="Center" Grid.Row="1" VerticalAlignment="Center" Grid.ColumnSpan="3" Height="346" Width="926"
-                            Zoom="X" DisableAnimations="True" />
+                            Zoom="X" DisableAnimations="True">
+            <Wpf:CartesianChart.AxisX>
+                <Wpf:Axis RangeChanged="Ax_RangeChanged" PreviewRangeChanged="Ax_PreviewRangeChanged" MinValue="0" MaxValue="{Binding MaxXValue}" />
+            </Wpf:CartesianChart.AxisX>
+        </Wpf:CartesianChart>
     </Grid>
 </Window>

@@ -37,9 +37,9 @@ namespace CryptoTracking
         public string SelectedPhysicalCurrency { get; set; }
         public string SelectedCryptoCurrency { get; set; }
 
-        public int btcIndex { get; set; }  
-
-        public int usdIndex { get; set; }
+        private int MaxXValue { get; set; }
+        private delegate void PreviewRangeDelegate(LiveCharts.Events.PreviewRangeChangedEventArgs e);
+        private delegate void RangeDelegate(LiveCharts.Events.RangeChangedEventArgs e);
 
         private const string QUERY_URL_ROOT = "https://www.alphavantage.co/query";
         private const string QUERY_URL_FUNCTION = "?function=";
@@ -115,36 +115,45 @@ namespace CryptoTracking
 
         private void DisplayChart()
         {
-            var intervalButton = (RadioButton)grid
+            var intervalButton = grid
                 .Children
                 .OfType<RadioButton>()
                 .Where(rb => rb.GroupName.Equals("IntervalGroup") && rb.IsChecked.HasValue && rb.IsChecked.Value )
                 .FirstOrDefault();
             Interval interval = (Interval)int.Parse(intervalButton.Uid);
 
-            var candleButton = (RadioButton)grid
+            var candleButton = grid
                 .Children
                 .OfType<RadioButton>()
                 .Where(rb => rb.GroupName.Equals("CandleGroup") && rb.IsChecked.HasValue && rb.IsChecked.Value)
                 .FirstOrDefault();
             CandleValue candleValue = (CandleValue)int.Parse(candleButton.Uid);
 
-
             KeyValuePair<List<string>, List<double>> timeSeries = GetData(SelectedCryptoCurrency, SelectedPhysicalCurrency, interval, candleValue);
-
-            chart.AxisX.Clear();
-            chart.AxisY.Clear();
 
             List<string> times = timeSeries.Key;
             List<double> values = timeSeries.Value;
 
-            chart.AxisX.Add(new LiveCharts.Wpf.Axis
+            MaxXValue = times.Count - 1;
+
+            ChartValues<Point> points = new ChartValues<Point>();
+            for (int i = 0; i < values.Count; i++)
             {
-                Labels = times,
+                points.Add(new Point() { X = i, Y = values[i] });
+            }
 
-            });
+            //chart.AxisX.Clear();
+            chart.AxisY.Clear();
 
-            chart.AxisY.Add(new LiveCharts.Wpf.Axis
+            //chart.AxisX.Add(new Axis
+            //{
+            //    LabelFormatter = value => times.ElementAtOrDefault((int)value),
+            //    RangeChange
+            //});
+
+            chart.AxisX.FirstOrDefault().LabelFormatter = value => times.ElementAtOrDefault((int)value);
+
+            chart.AxisY.Add(new Axis
             {
                 MinValue = values.Min()
             });
@@ -153,7 +162,8 @@ namespace CryptoTracking
             SeriesCollection series = new SeriesCollection();
             series.Add(new LineSeries()
             {
-                Values = new ChartValues<double>(values),
+                Configuration = new CartesianMapper<Point>().X(point => point.X).Y(point => point.Y),
+                Values = points,
                 LineSmoothness = 0,
                 PointGeometrySize = 0
             });
@@ -163,6 +173,21 @@ namespace CryptoTracking
         private void ClearData(object sender, RoutedEventArgs e)
         {
             
+        }
+
+        private bool limitMin = false, limitMax = false;
+        private void Ax_PreviewRangeChanged(LiveCharts.Events.PreviewRangeChangedEventArgs e)
+        {
+            // I use begintime and endtime and limited min and max
+            limitMax = e.PreviewMaxValue > MaxXValue;
+            limitMin = e.PreviewMinValue < 0;
+        }
+
+        private void Ax_RangeChanged(LiveCharts.Events.RangeChangedEventArgs e)
+        {
+            Axis ax = (Axis)e.Axis;
+            if (limitMax) ax.MaxValue = MaxXValue;
+            if (limitMin) ax.MinValue = 0;
         }
 
         private KeyValuePair<List<string>, List<double>> GetData(string symbol, string market, Interval interval, CandleValue candleValue)
