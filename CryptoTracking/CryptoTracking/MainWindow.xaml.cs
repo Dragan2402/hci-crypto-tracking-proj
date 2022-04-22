@@ -30,6 +30,8 @@ namespace CryptoTracking
         public List<CryptoCurrency> CryptoCurrencies { get; set; }
         public List<PhysicalCurrency> PhysicalCurrencies { get; set; }
 
+        private Dictionary<string, object> LoadedData { get; set; }
+
         public string SelectedPhysicalCurrency { get; set; }
         public string SelectedCryptoCurrency { get; set; }
 
@@ -49,7 +51,7 @@ namespace CryptoTracking
             loadCryptoCurrencies();
             loadPhysicalCurrencies();
 
-            KeyValuePair<List<string>, List<double>> kvp = GetData("BTC", "USD", Interval.OneMin, CandleValue.Low);
+            LoadedData = new Dictionary<string, object>();
 
             InitializeComponent();
             DataContext = this;
@@ -173,28 +175,21 @@ namespace CryptoTracking
         {
             string queryUrl = GetQueryUrl(symbol, market, interval);
             Uri queryUri = new Uri(queryUrl);
-
+            Dictionary<string, object> timeSeries = GetTimeSeries(interval.GetKey(), queryUri);
+            
             List<string> times = new List<string>();
             List<double> values = new List<double>();
+            string candleValueKey = candleValue.GetKey(market, interval.IsIntraday());
 
-            using (WebClient client = new WebClient())
+            foreach (string timeSeriesTime in timeSeries.Keys)
             {
-                JavaScriptSerializer js = new JavaScriptSerializer();
-                Dictionary<string, object> jsonData = (Dictionary<string, object>)js.Deserialize(client.DownloadString(queryUri), typeof(object));
-                string keykey = interval.GetKey();
-                Dictionary<string, object> timeSeries = (Dictionary<string, object>)jsonData[interval.GetKey()];
+                Dictionary<string, object> timeSeriesValues = (Dictionary<string, object>)timeSeries[timeSeriesTime];
+                double timeSeriesValue = double.Parse((string)timeSeriesValues[candleValueKey]);
 
-                string candleValueKey = candleValue.GetKey(market, interval.IsIntraday());
-
-                foreach (string timeSeriesTime in timeSeries.Keys)
-                {
-                    Dictionary<string, object> timeSeriesValues = (Dictionary<string, object>)timeSeries[timeSeriesTime];
-                    double timeSeriesValue = Double.Parse((string)timeSeriesValues[candleValueKey]);
-
-                    times.Add(timeSeriesTime);
-                    values.Add(timeSeriesValue);
-                }
+                times.Add(timeSeriesTime);
+                values.Add(timeSeriesValue);
             }
+
             times.Reverse();
             values.Reverse();
             return new KeyValuePair<List<string>, List<double>>(times, values);
@@ -212,6 +207,27 @@ namespace CryptoTracking
 
             queryUrl += QUERY_URL_API_KEY;
             return queryUrl;
+        }
+
+        private Dictionary<string, object> GetTimeSeries(string intervalKey, Uri queryUri)
+        {
+            Dictionary<string, object> timeSeries;
+
+            if (LoadedData.ContainsKey(intervalKey))
+            {
+                timeSeries = (Dictionary<string, object>)LoadedData[intervalKey];
+            }
+            else
+            {
+                using (WebClient client = new WebClient())
+                {
+                    JavaScriptSerializer js = new JavaScriptSerializer();
+                    Dictionary<string, object> jsonData = (Dictionary<string, object>)js.Deserialize(client.DownloadString(queryUri), typeof(object));
+                    timeSeries = (Dictionary<string, object>)jsonData[intervalKey];
+                    LoadedData[intervalKey] = timeSeries;
+                }
+            }
+            return timeSeries;
         }
     }
 }
