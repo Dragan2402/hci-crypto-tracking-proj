@@ -6,8 +6,8 @@
         xmlns:local="clr-namespace:CryptoTracking"
         xmlns:Wpf="clr-namespace:LiveCharts.Wpf;assembly=LiveCharts.Wpf" x:Class="CryptoTracking.MainWindow"
         mc:Ignorable="d"
-        Title="MainWindow" Height="600" Width="1000">
-    <Grid Name="grid" Margin="0,0,0,0">
+        Title="CryptoTracker" Height="768" Width="1366" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" ResizeMode="NoResize">
+    <Grid Name="grid" Margin="10,10,0,0" RenderTransformOrigin="0.5,0.5" VerticalAlignment="Top" HorizontalAlignment="Left" Height="720" Width="985">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width = "26" />
             <ColumnDefinition Width="277"/>
@@ -23,50 +23,51 @@
             <RowDefinition Height="41*" />
         </Grid.RowDefinitions>
 
-        <Label x:Name="CrpytoLbl" Content="Select Crypto Currency:" Grid.Row="0" Grid.Column="1" Margin="8,31,129,66"/>
+        <Label x:Name="CrpytoLbl" Content="Crypto Currency:" Grid.Row="0" Margin="66,32,110,101" Grid.Column="1"/>
         <ComboBox Grid.Row="0" Grid.Column="1" x:Name="cmbCrypto"
                   ItemsSource="{Binding CryptoCurrencies}" 
                   DisplayMemberPath="Code"
                   SelectedValuePath="Code"
-                  
                   SelectedValue="{Binding SelectedCryptoCurrency}"
-                  Margin="153,28,14,70" />
+                  Margin="167,33,16,107" />
 
-        <Label x:Name="MarketLbl" Content="Select Market:" Grid.Row="0" Grid.Column="2" Margin="51,30,184,70"/>
+        <Label x:Name="MarketLbl" Content="Market:" Grid.Row="0" Grid.Column="2" Margin="110,32,235,101"/>
         <ComboBox Grid.Row="0" Grid.Column="2" x:Name="cmbMarket"
                   ItemsSource="{Binding PhysicalCurrencies}" 
                   DisplayMemberPath="Code"
                   SelectedValuePath="Code"
                   SelectedValue="{Binding SelectedPhysicalCurrency}"
-                  Margin="183,28,52,70"/>
-        <Button x:Name="DisplayBtn" Content="Display Chart" Click="DisplayChartClicked" Grid.Row="0" Grid.Column="3" Margin="87,30,28,64" RenderTransformOrigin="0.5,0.5">
+                  Margin="161,33,143,107"/>
+        <Button x:Name="DisplayBtn" Content="Refresh" Click="DisplayChartClicked" Grid.Row="0" Grid.Column="3" Margin="35,33,129,107" RenderTransformOrigin="0.5,0.5">
             <Button.RenderTransform>
                 <TransformGroup>
                     <ScaleTransform/>
                 </TransformGroup>
             </Button.RenderTransform>
         </Button>
-        <Label x:Name="timePeriodLbl"  Content="Select Time Period:" Grid.Row="2" Grid.Column="1" Margin="18,3,121,0"/>
-        <Label x:Name="viewTypeLbl"  Content="Select View Type:" Grid.Row="3" Grid.Column="1" Margin="18,0,121,10" Height="28" VerticalAlignment="Bottom"/>
-        <RadioButton  x:Name="rb1min"     GroupName="IntervalGroup" Grid.Row="2" Grid.Column="2" Margin="0,3,275,0"   Content="1min"    Uid="1" IsChecked="True"/>
-        <RadioButton  x:Name="rb5min"     GroupName="IntervalGroup" Grid.Row="2" Grid.Column="2" Margin="63,3,222,0"  Content="5min"    Uid="2"/>
-        <RadioButton  x:Name="rb15min"    GroupName="IntervalGroup" Grid.Row="2" Grid.Column="2" Margin="139,3,123,0" Content="15min"   Uid="3"/>
-        <RadioButton  x:Name="rb30min"    GroupName="IntervalGroup" Grid.Row="2" Grid.Column="2" Margin="215,3,52,0"  Content="30min"   Uid="4"/>
-        <RadioButton  x:Name="rb60min"    GroupName="IntervalGroup" Grid.Row="2" Grid.Column="2" Margin="290,3,192,0" Content="60min"   Uid="5" Grid.ColumnSpan="2"/>
-        <RadioButton  x:Name="rbDaily"    GroupName="IntervalGroup" Grid.Row="2" Grid.Column="3" Margin="26,3,145,0"  Content="Daily"   Uid="6"/>
-        <RadioButton  x:Name="rbWeekly"   GroupName="IntervalGroup" Grid.Row="2" Grid.Column="3" Margin="79,3,79,0"   Content="Weekly"  Uid="7"/>
-        <RadioButton  x:Name="rbMonthly"  GroupName="IntervalGroup" Grid.Row="2" Grid.Column="3" Margin="144,3,27,0"  Content="Monthly" Uid="8"/>
-
-        <RadioButton  x:Name="rbLow"    GroupName="CandleGroup" Grid.Row="3" Grid.Column="2" Margin="0,3,275,0"   Content="Low"   Uid="3" IsChecked="True"/>
-        <RadioButton  x:Name="rbHigh"   GroupName="CandleGroup" Grid.Row="3" Grid.Column="2" Margin="63,3,208,0"  Content="High"  Uid="2"/>
-        <RadioButton  x:Name="rbOpen"   GroupName="CandleGroup" Grid.Row="3" Grid.Column="2" Margin="139,3,123,0" Content="Open"  Uid="1"/>
-        <RadioButton  x:Name="rbClose"  GroupName="CandleGroup" Grid.Row="3" Grid.Column="2" Margin="215,3,52,0"  Content="Close" Uid="4"/>
-        <Button x:Name="clearBtn"  Grid.Row="3" Grid.Column="3" Content="Clear" Margin="109,1,10,9" Click="ClearData"/>
+        <RadioButton  x:Name="rb1min"     GroupName="IntervalGroup" Grid.Row="1" Grid.Column="1" Margin="107,444,49,10"   Content="1min"    Uid="1" IsChecked="True" Grid.RowSpan="2"/>
+        <RadioButton  x:Name="rb5min"     GroupName="IntervalGroup" Grid.Row="1" Grid.Column="1" Margin="170,444,392,10"  Content="5min"    Uid="2" Grid.RowSpan="2" Grid.ColumnSpan="2"/>
+        <RadioButton  x:Name="rb15min"    GroupName="IntervalGroup" Grid.Row="1" Grid.Column="1" Margin="246,444,293,10" Content="15min"   Uid="3" Grid.ColumnSpan="2" Grid.RowSpan="2"/>
+        <RadioButton  x:Name="rb30min"    GroupName="IntervalGroup" Grid.Row="1" Grid.Column="2" Margin="45,444,222,10"  Content="30min"   Uid="4" Grid.RowSpan="2"/>
+        <RadioButton  x:Name="rb60min"    GroupName="IntervalGroup" Grid.Row="1" Grid.Column="2" Margin="120,444,104,10" Content="60min"   Uid="5" Grid.RowSpan="2"/>
+        <RadioButton  x:Name="rbDaily"    GroupName="IntervalGroup" Grid.Row="1" Grid.Column="2" Margin="306,444,3,10"  Content="Daily"   Uid="6" Grid.RowSpan="2"/>
+        <RadioButton  x:Name="rbWeekly"   GroupName="IntervalGroup" Grid.Row="1" Grid.Column="2" Margin="359,444,195,10"   Content="Weekly"  Uid="7" Grid.ColumnSpan="2" Grid.RowSpan="2"/>
+        <RadioButton  x:Name="rbMonthly"  GroupName="IntervalGroup" Grid.Row="1" Grid.Column="3" Margin="28,444,143,10"  Content="Monthly" Uid="8" Grid.RowSpan="2"/>
+        <RadioButton  x:Name="rbLow"    GroupName="CandleGroup" Grid.Row="2" Grid.Column="1" Margin="107,47,49,10"   Content="Low"   Uid="3" IsChecked="True" Grid.RowSpan="2"/>
+        <RadioButton  x:Name="rbHigh"   GroupName="CandleGroup" Grid.Row="2" Grid.Column="1" Margin="170,47,378,10"  Content="High"  Uid="2" Grid.RowSpan="2" Grid.ColumnSpan="2"/>
+        <RadioButton  x:Name="rbOpen"   GroupName="CandleGroup" Grid.Row="2" Grid.Column="1" Margin="246,47,293,10" Content="Open"  Uid="1" Grid.ColumnSpan="2" Grid.RowSpan="2"/>
+        <RadioButton  x:Name="rbClose"  GroupName="CandleGroup" Grid.Row="2" Grid.Column="2" Margin="45,47,222,10"  Content="Close" Uid="4" Grid.RowSpan="2"/>
         <Wpf:CartesianChart x:Name="chart" Grid.Column="1"  HorizontalAlignment="Center" Grid.Row="1" VerticalAlignment="Center" Grid.ColumnSpan="3" Height="346" Width="926"
                             Zoom="X" DisableAnimations="True">
             <Wpf:CartesianChart.AxisX>
                 <Wpf:Axis RangeChanged="Ax_RangeChanged" PreviewRangeChanged="Ax_PreviewRangeChanged" MinValue="0" MaxValue="{Binding MaxXValue}" />
             </Wpf:CartesianChart.AxisX>
         </Wpf:CartesianChart>
+        <DataGrid x:Name="dataGrid" Grid.Column="3" d:ItemsSource="{d:SampleData ItemCount=5}" Margin="236,5,-330,26" Grid.RowSpan="4" Grid.ColumnSpan="2" HorizontalScrollBarVisibility="Disabled">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header = "Date/Time" CanUserResize="False" Binding="{Binding Time}" MinWidth="190"/>
+                <DataGridTextColumn Header = "Value" CanUserResize="False" Binding="{Binding Value}" MinWidth="190"/>
+            </DataGrid.Columns>
+        </DataGrid>
     </Grid>
 </Window>

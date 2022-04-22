@@ -2,24 +2,14 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using System.Net;
 using TinyCsvParser;
 using System.Web.Script.Serialization;
 using CryptoTracking.model;
 using LiveCharts;
 using LiveCharts.Wpf;
-using LiveCharts.Defaults;
-using LiveCharts.Events;
 using LiveCharts.Configurations;
 
 namespace CryptoTracking
@@ -59,6 +49,18 @@ namespace CryptoTracking
             DataContext = this;
 
             DisplayChart();
+        }
+
+        public class Data
+        {
+            public Data(string time, double value)
+            {
+                this.Time = time;
+                this.Value = value;
+            }
+            public Data() { }
+            public string Time { get; set; }
+            public double Value { get; set; }
         }
 
         private void loadCryptoCurrencies()
@@ -118,7 +120,7 @@ namespace CryptoTracking
             var intervalButton = grid
                 .Children
                 .OfType<RadioButton>()
-                .Where(rb => rb.GroupName.Equals("IntervalGroup") && rb.IsChecked.HasValue && rb.IsChecked.Value )
+                .Where(rb => rb.GroupName.Equals("IntervalGroup") && rb.IsChecked.HasValue && rb.IsChecked.Value)
                 .FirstOrDefault();
             Interval interval = (Interval)int.Parse(intervalButton.Uid);
 
@@ -153,9 +155,13 @@ namespace CryptoTracking
 
             chart.AxisX.FirstOrDefault().LabelFormatter = value => times.ElementAtOrDefault((int)value);
 
+            double max = values.Max();
+            double min = values.Min();
+            double diff = (max - min) * 0.05;
             chart.AxisY.Add(new Axis
             {
-                MinValue = values.Min()
+                MinValue = min - diff,
+                MaxValue = max + diff
             });
 
             chart.Series.Clear();
@@ -168,11 +174,15 @@ namespace CryptoTracking
                 PointGeometrySize = 0
             });
             chart.Series = series;
-        }
 
-        private void ClearData(object sender, RoutedEventArgs e)
-        {
-            
+            dataGrid.Items.Clear();
+            if (times.Count() == values.Count())
+            {
+                for (int i = 0; i < times.Count(); i++)
+                {
+                    dataGrid.Items.Add(new Data(times[i], values[i]));
+                }
+            }
         }
 
         private bool limitMin = false, limitMax = false;
