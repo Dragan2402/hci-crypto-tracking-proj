@@ -148,6 +148,11 @@ namespace CryptoTracking
 
             });
 
+            chart.AxisY.Add(new LiveCharts.Wpf.Axis
+            {
+                MinValue = values.Min()
+            });
+
             chart.Series.Clear();
             SeriesCollection series = new SeriesCollection();
             series.Add(new LineSeries()
