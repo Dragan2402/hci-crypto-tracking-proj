@@ -19,6 +19,8 @@ using CryptoTracking.model;
 using LiveCharts;
 using LiveCharts.Wpf;
 using LiveCharts.Defaults;
+using LiveCharts.Events;
+using LiveCharts.Configurations;
 
 namespace CryptoTracking
 {
@@ -55,6 +57,8 @@ namespace CryptoTracking
 
             InitializeComponent();
             DataContext = this;
+
+            DisplayChart();
         }
 
         private void loadCryptoCurrencies()
@@ -104,7 +108,12 @@ namespace CryptoTracking
             SelectedPhysicalCurrency = "USD";
         }
 
-        private void DisplayData(object sender, RoutedEventArgs e)
+        private void DisplayChartClicked(object sender, RoutedEventArgs e)
+        {
+            DisplayChart();
+        }
+
+        private void DisplayChart()
         {
             var intervalButton = (RadioButton)grid
                 .Children
@@ -128,21 +137,6 @@ namespace CryptoTracking
 
             List<string> times = timeSeries.Key;
             List<double> values = timeSeries.Value;
-
-            //for(int i = 0; i < 20; i++)
-            //{
-            //    labels.Add("Datum" + i.ToString());
-            //}
-
-            //double value = 48000;
-            //Random random = new Random();
-
-            //for(int i = 0; i < 20; i++)
-            //{
-            //    double randomMultiplier = random.Next(80, 120);
-            //    value *= randomMultiplier/100;
-            //    values.Add(value);
-            //}
 
             chart.AxisX.Add(new LiveCharts.Wpf.Axis
             {
@@ -175,7 +169,7 @@ namespace CryptoTracking
         {
             string queryUrl = GetQueryUrl(symbol, market, interval);
             Uri queryUri = new Uri(queryUrl);
-            Dictionary<string, object> timeSeries = GetTimeSeries(interval.GetKey(), queryUri);
+            Dictionary<string, object> timeSeries = GetTimeSeries(interval.GetKey(), symbol, market, queryUri);
             
             List<string> times = new List<string>();
             List<double> values = new List<double>();
@@ -209,13 +203,13 @@ namespace CryptoTracking
             return queryUrl;
         }
 
-        private Dictionary<string, object> GetTimeSeries(string intervalKey, Uri queryUri)
+        private Dictionary<string, object> GetTimeSeries(string intervalKey, string symbol, string market, Uri queryUri)
         {
             Dictionary<string, object> timeSeries;
-
-            if (LoadedData.ContainsKey(intervalKey))
+            string loadedDataKey = intervalKey + "(" + symbol + ")(" + market + ")";
+            if (LoadedData.ContainsKey(loadedDataKey))
             {
-                timeSeries = (Dictionary<string, object>)LoadedData[intervalKey];
+                timeSeries = (Dictionary<string, object>)LoadedData[loadedDataKey];
             }
             else
             {
@@ -224,7 +218,7 @@ namespace CryptoTracking
                     JavaScriptSerializer js = new JavaScriptSerializer();
                     Dictionary<string, object> jsonData = (Dictionary<string, object>)js.Deserialize(client.DownloadString(queryUri), typeof(object));
                     timeSeries = (Dictionary<string, object>)jsonData[intervalKey];
-                    LoadedData[intervalKey] = timeSeries;
+                    LoadedData[loadedDataKey] = timeSeries;
                 }
             }
             return timeSeries;

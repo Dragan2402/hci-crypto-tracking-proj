@@ -39,7 +39,7 @@
                   SelectedValuePath="Code"
                   SelectedValue="{Binding SelectedPhysicalCurrency}"
                   Margin="183,28,52,70"/>
-        <Button x:Name="DisplayBtn" Content="Display" Click="DisplayData" Grid.Row="0" Grid.Column="3" Margin="87,30,28,64" RenderTransformOrigin="0.5,0.5">
+        <Button x:Name="DisplayBtn" Content="Display Chart" Click="DisplayChartClicked" Grid.Row="0" Grid.Column="3" Margin="87,30,28,64" RenderTransformOrigin="0.5,0.5">
             <Button.RenderTransform>
                 <TransformGroup>
                     <ScaleTransform/>
@@ -62,6 +62,7 @@
         <RadioButton  x:Name="rbOpen"   GroupName="CandleGroup" Grid.Row="3" Grid.Column="2" Margin="139,3,123,0" Content="Open"  Uid="1"/>
         <RadioButton  x:Name="rbClose"  GroupName="CandleGroup" Grid.Row="3" Grid.Column="2" Margin="215,3,52,0"  Content="Close" Uid="4"/>
         <Button x:Name="clearBtn"  Grid.Row="3" Grid.Column="3" Content="Clear" Margin="109,1,10,9" Click="ClearData"/>
-        <Wpf:CartesianChart x:Name="chart" Grid.Column="1"  HorizontalAlignment="Center" Grid.Row="1" VerticalAlignment="Center" Grid.ColumnSpan="3" Height="346" Width="926"/>
+        <Wpf:CartesianChart x:Name="chart" Grid.Column="1"  HorizontalAlignment="Center" Grid.Row="1" VerticalAlignment="Center" Grid.ColumnSpan="3" Height="346" Width="926"
+                            Zoom="X" DisableAnimations="True" />
     </Grid>
 </Window>
