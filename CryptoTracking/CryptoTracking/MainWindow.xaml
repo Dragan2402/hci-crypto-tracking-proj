@@ -65,8 +65,8 @@
         </Wpf:CartesianChart>
         <DataGrid x:Name="dataGrid" Grid.Column="3" d:ItemsSource="{d:SampleData ItemCount=5}" Margin="236,5,-330,26" Grid.RowSpan="4" Grid.ColumnSpan="2" HorizontalScrollBarVisibility="Disabled">
             <DataGrid.Columns>
-                <DataGridTextColumn Header = "Date/Time" CanUserResize="False" Binding="{Binding Time}" MinWidth="190"/>
-                <DataGridTextColumn Header = "Value" CanUserResize="False" Binding="{Binding Value}" MinWidth="190"/>
+                <DataGridTextColumn Header = "Date/Time" CanUserResize="False" Binding="{Binding Time}" MinWidth="190" MaxWidth="190" IsReadOnly="True" CanUserReorder="False"/>
+                <DataGridTextColumn Header = "Value" CanUserResize="False" Binding="{Binding Value}" MinWidth="190" MaxWidth="190" IsReadOnly="True" CanUserReorder="False"/>
             </DataGrid.Columns>
         </DataGrid>
     </Grid>
