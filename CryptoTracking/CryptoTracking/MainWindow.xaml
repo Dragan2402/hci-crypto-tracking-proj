@@ -57,8 +57,8 @@
         <RadioButton  x:Name="rbHigh"   GroupName="CandleGroup" Grid.Row="2" Grid.Column="1" Margin="170,47,378,10"  Content="High"  Uid="2" Grid.RowSpan="2" Grid.ColumnSpan="2"/>
         <RadioButton  x:Name="rbOpen"   GroupName="CandleGroup" Grid.Row="2" Grid.Column="1" Margin="246,47,293,10" Content="Open"  Uid="1" Grid.ColumnSpan="2" Grid.RowSpan="2"/>
         <RadioButton  x:Name="rbClose"  GroupName="CandleGroup" Grid.Row="2" Grid.Column="2" Margin="45,47,222,10"  Content="Close" Uid="4" Grid.RowSpan="2"/>
-        <Wpf:CartesianChart x:Name="chart" Grid.Column="1"  HorizontalAlignment="Center" Grid.Row="1" VerticalAlignment="Center" Grid.ColumnSpan="3" Height="346" Width="926"
-                            Zoom="X" DisableAnimations="True">
+        <Wpf:CartesianChart x:Name="chart" Grid.Column="1"  HorizontalAlignment="Center" VerticalAlignment="Top" Grid.ColumnSpan="3" Height="441" Width="926"
+                            Zoom="X" DisableAnimations="True" Margin="0,121,0,0" Grid.RowSpan="2">
             <Wpf:CartesianChart.AxisX>
                 <Wpf:Axis RangeChanged="Ax_RangeChanged" PreviewRangeChanged="Ax_PreviewRangeChanged" MinValue="0" MaxValue="{Binding MaxXValue}" />
             </Wpf:CartesianChart.AxisX>
