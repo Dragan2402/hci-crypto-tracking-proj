@@ -29,6 +29,8 @@ namespace CryptoTracking
         public string SelectedCryptoCurrency { get; set; }
 
         private int MaxXValue { get; set; }
+
+        private bool LimitMin = false, LimitMax = false;
         private delegate void PreviewRangeDelegate(LiveCharts.Events.PreviewRangeChangedEventArgs e);
         private delegate void RangeDelegate(LiveCharts.Events.RangeChangedEventArgs e);
 
@@ -72,16 +74,8 @@ namespace CryptoTracking
             CsvParser<CryptoCurrency> csvCryptoParser = new CsvParser<CryptoCurrency>(csvParserOptions, csvCryptoMapper);
             var resultCrypto = csvCryptoParser.ReadFromFile(@"../../data/digital_currency_list.csv", Encoding.UTF8).ToList();
 
-            //int i = 0;
             foreach (var item in resultCrypto)
             {
-                
-                //if (item.Result.Code.Equals("BTC"))
-                //{
-                //    btcIndex = i;
-                //}
-                //i++;
-                
                 CryptoCurrency temp = new CryptoCurrency(item.Result.Code, item.Result.Name);
                 CryptoCurrencies.Add(temp);
             }
@@ -95,16 +89,9 @@ namespace CryptoTracking
             CsvPhysicalMapping csvPhysicalMapper = new CsvPhysicalMapping();
             CsvParser<PhysicalCurrency> csvPhysicalParser = new CsvParser<PhysicalCurrency>(csvPhysicalParserOptions, csvPhysicalMapper);
             var resultPhysical = csvPhysicalParser.ReadFromFile(@"../../data/physical_currency_list.csv", Encoding.UTF8).ToList();
-            //int i=0;
+
             foreach (var item in resultPhysical)
             {
-                //if (item.Result.Code.Equals("USD"))
-                //{
-                //    usdIndex = i;
-                    
-                //}
-                
-                //i++;
                 PhysicalCurrency temp = new PhysicalCurrency(item.Result.Code, item.Result.Name);
                 PhysicalCurrencies.Add(temp);
             }
@@ -148,17 +135,11 @@ namespace CryptoTracking
                     points.Add(new Point() { X = i, Y = values[i] });
                 }
 
-                //chart.AxisX.Clear();
-                chart.AxisY.Clear();
-
-                //chart.AxisX.Add(new Axis
-                //{
-                //    LabelFormatter = value => times.ElementAtOrDefault((int)value),
-                //    RangeChange
-                //});
-
                 chart.AxisX.FirstOrDefault().LabelFormatter = value => times.ElementAtOrDefault((int)value);
+                chart.AxisX.FirstOrDefault().MinValue = 0;
+                chart.AxisX.FirstOrDefault().MaxValue = MaxXValue;
 
+                chart.AxisY.Clear();
                 double max = values.Max();
                 double min = values.Min();
                 double diff = (max - min) * 0.05;
@@ -168,7 +149,6 @@ namespace CryptoTracking
                     MaxValue = max + diff
 
                 });
-
 
                 chart.Series.Clear();
                 SeriesCollection series = new SeriesCollection();
@@ -196,19 +176,17 @@ namespace CryptoTracking
             }
         }
 
-        private bool limitMin = false, limitMax = false;
         private void Ax_PreviewRangeChanged(LiveCharts.Events.PreviewRangeChangedEventArgs e)
         {
-            // I use begintime and endtime and limited min and max
-            limitMax = e.PreviewMaxValue > MaxXValue;
-            limitMin = e.PreviewMinValue < 0;
+            LimitMax = e.PreviewMaxValue > MaxXValue;
+            LimitMin = e.PreviewMinValue < 0;
         }
 
         private void Ax_RangeChanged(LiveCharts.Events.RangeChangedEventArgs e)
         {
             Axis ax = (Axis)e.Axis;
-            if (limitMax) ax.MaxValue = MaxXValue;
-            if (limitMin) ax.MinValue = 0;
+            if (LimitMax) ax.MaxValue = MaxXValue;
+            if (LimitMin) ax.MinValue = 0;
         }
 
         private KeyValuePair<List<string>, List<double>> GetData(string symbol, string market, Interval interval, CandleValue candleValue)
