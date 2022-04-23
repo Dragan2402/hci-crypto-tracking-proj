@@ -11,6 +11,7 @@ using CryptoTracking.model;
 using LiveCharts;
 using LiveCharts.Wpf;
 using LiveCharts.Configurations;
+using System.Globalization;
 
 namespace CryptoTracking
 {
@@ -131,57 +132,67 @@ namespace CryptoTracking
                 .FirstOrDefault();
             CandleValue candleValue = (CandleValue)int.Parse(candleButton.Uid);
 
+            
             KeyValuePair<List<string>, List<double>> timeSeries = GetData(SelectedCryptoCurrency, SelectedPhysicalCurrency, interval, candleValue);
 
             List<string> times = timeSeries.Key;
             List<double> values = timeSeries.Value;
 
-            MaxXValue = times.Count - 1;
-
-            ChartValues<Point> points = new ChartValues<Point>();
-            for (int i = 0; i < values.Count; i++)
+            if (times != null && values != null)
             {
-                points.Add(new Point() { X = i, Y = values[i] });
-            }
+                MaxXValue = times.Count - 1;
 
-            //chart.AxisX.Clear();
-            chart.AxisY.Clear();
-
-            //chart.AxisX.Add(new Axis
-            //{
-            //    LabelFormatter = value => times.ElementAtOrDefault((int)value),
-            //    RangeChange
-            //});
-
-            chart.AxisX.FirstOrDefault().LabelFormatter = value => times.ElementAtOrDefault((int)value);
-
-            double max = values.Max();
-            double min = values.Min();
-            double diff = (max - min) * 0.05;
-            chart.AxisY.Add(new Axis
-            {
-                MinValue = min - diff,
-                MaxValue = max + diff
-            });
-
-            chart.Series.Clear();
-            SeriesCollection series = new SeriesCollection();
-            series.Add(new LineSeries()
-            {
-                Configuration = new CartesianMapper<Point>().X(point => point.X).Y(point => point.Y),
-                Values = points,
-                LineSmoothness = 0,
-                PointGeometrySize = 0
-            });
-            chart.Series = series;
-
-            dataGrid.Items.Clear();
-            if (times.Count() == values.Count())
-            {
-                for (int i = 0; i < times.Count(); i++)
+                ChartValues<Point> points = new ChartValues<Point>();
+                for (int i = 0; i < values.Count; i++)
                 {
-                    dataGrid.Items.Add(new Data(times[i], values[i]));
+                    points.Add(new Point() { X = i, Y = values[i] });
                 }
+
+                //chart.AxisX.Clear();
+                chart.AxisY.Clear();
+
+                //chart.AxisX.Add(new Axis
+                //{
+                //    LabelFormatter = value => times.ElementAtOrDefault((int)value),
+                //    RangeChange
+                //});
+
+                chart.AxisX.FirstOrDefault().LabelFormatter = value => times.ElementAtOrDefault((int)value);
+
+                double max = values.Max();
+                double min = values.Min();
+                double diff = (max - min) * 0.05;
+                chart.AxisY.Add(new Axis
+                {
+                    MinValue = min - diff,
+                    MaxValue = max + diff
+
+                });
+
+
+                chart.Series.Clear();
+                SeriesCollection series = new SeriesCollection();
+                series.Add(new LineSeries()
+                {
+                    Configuration = new CartesianMapper<Point>().X(point => point.X).Y(point => point.Y),
+                    Values = points,
+                    LineSmoothness = 0,
+                    PointGeometrySize = 0
+                });
+                chart.Series = series;
+
+                dataGrid.Items.Clear();
+                if (times.Count() == values.Count())
+                {
+                    for (int i = 0; i < times.Count(); i++)
+                    {
+                        dataGrid.Items.Add(new Data(times[i], values[i]));
+                    }
+                }
+            }
+            else
+            {
+                MessageBoxResult result = MessageBox.Show(this,"Data is currently not available, try later","Info");
             }
         }
 
@@ -203,25 +214,38 @@ namespace CryptoTracking
         private KeyValuePair<List<string>, List<double>> GetData(string symbol, string market, Interval interval, CandleValue candleValue)
         {
             string queryUrl = GetQueryUrl(symbol, market, interval);
+            
             Uri queryUri = new Uri(queryUrl);
             Dictionary<string, object> timeSeries = GetTimeSeries(interval.GetKey(), symbol, market, queryUri);
             
             List<string> times = new List<string>();
             List<double> values = new List<double>();
             string candleValueKey = candleValue.GetKey(market, interval.IsIntraday());
-
-            foreach (string timeSeriesTime in timeSeries.Keys)
+            if (timeSeries != null)
             {
-                Dictionary<string, object> timeSeriesValues = (Dictionary<string, object>)timeSeries[timeSeriesTime];
-                double timeSeriesValue = double.Parse((string)timeSeriesValues[candleValueKey]);
+                foreach (string timeSeriesTime in timeSeries.Keys)
+                {
+                    Dictionary<string, object> timeSeriesValues = (Dictionary<string, object>)timeSeries[timeSeriesTime];
 
-                times.Add(timeSeriesTime);
-                values.Add(timeSeriesValue);
+                    string valueString = (string)timeSeriesValues[candleValueKey];
+                    NumberFormatInfo provider = new NumberFormatInfo();
+                    provider.NumberDecimalSeparator = ".";
+                    double timeSeriesValue = Convert.ToDouble(valueString, provider);
+
+                    times.Add(timeSeriesTime);
+
+                    values.Add(timeSeriesValue);
+                }
+
+                times.Reverse();
+                values.Reverse();
+
+                return new KeyValuePair<List<string>, List<double>>(times, values);
             }
-
-            times.Reverse();
-            values.Reverse();
-            return new KeyValuePair<List<string>, List<double>>(times, values);
+            else
+            {
+                return new KeyValuePair<List<string>, List<double>>();
+            }
         }
 
         private string GetQueryUrl(string symbol, string market, Interval interval)
@@ -242,18 +266,26 @@ namespace CryptoTracking
         {
             Dictionary<string, object> timeSeries;
             string loadedDataKey = intervalKey + "(" + symbol + ")(" + market + ")";
+       
             if (LoadedData.ContainsKey(loadedDataKey))
             {
                 timeSeries = (Dictionary<string, object>)LoadedData[loadedDataKey];
             }
             else
             {
-                using (WebClient client = new WebClient())
+                try
                 {
-                    JavaScriptSerializer js = new JavaScriptSerializer();
-                    Dictionary<string, object> jsonData = (Dictionary<string, object>)js.Deserialize(client.DownloadString(queryUri), typeof(object));
-                    timeSeries = (Dictionary<string, object>)jsonData[intervalKey];
-                    LoadedData[loadedDataKey] = timeSeries;
+                    using (WebClient client = new WebClient())
+                    {
+                        JavaScriptSerializer js = new JavaScriptSerializer();
+                        Dictionary<string, object> jsonData = (Dictionary<string, object>)js.Deserialize(client.DownloadString(queryUri), typeof(object));
+                        timeSeries = (Dictionary<string, object>)jsonData[intervalKey];
+
+                        LoadedData[loadedDataKey] = timeSeries;
+                    }
+                }catch (Exception ex)
+                {
+                    return null;
                 }
             }
             return timeSeries;
